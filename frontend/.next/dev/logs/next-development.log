@@ -1,23 +1,47 @@
-[00:00:02.035] Server  LOG     It looks like you're trying to use TypeScript but do not have the required package(s) installed.
-Installing dependencies
+[00:00:02.714] Server  LOG      ✓ Ready in 1722ms
+[00:00:16.306] Browser ERROR   A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
 
-If you are not trying to use TypeScript, please remove the tsconfig.json file from your package root (and any TypeScript files in your app and pages directories).
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
 
-[00:00:02.658] Server  LOG     
-[00:00:02.659] Server  LOG     Installing devDependencies (npm):
-[00:00:02.660] Server  LOG     - typescript
-[00:00:02.660] Server  LOG     - @types/react
-[00:00:02.661] Server  LOG     
-[00:00:07.527] Server  LOG     
-[00:00:07.553] Server  LOG     
-[00:00:07.554] Server  LOG        We detected TypeScript in your project and reconfigured your tsconfig.json file for you. Strict-mode is set to false by default.
-[00:00:07.555] Server  LOG        The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
 
-[00:00:07.556] Server  LOG        	- incremental was set to true
-[00:00:07.557] Server  LOG     
-[00:00:07.558] Server  LOG        The following mandatory changes were made to your tsconfig.json:
+%s%s https://react.dev/link/hydration-mismatch 
 
-[00:00:07.559] Server  LOG        	- esModuleInterop was set to true (requirement for SWC / babel)
-[00:00:07.560] Server  LOG        	- jsx was set to react-jsx (next.js uses the React automatic runtime)
-[00:00:07.560] Server  LOG     
-[00:00:08.001] Server  LOG      ✓ Ready in 7.1s
+  ...
+    <AppContainer>
+      <Container fn={function fn}>
+        <PagesDevOverlayBridge>
+          <PagesDevOverlayErrorBoundary>
+            <PathnameContextProviderAdapter router={{sdc:{},sbc:{}, ...}} isAutoExport={true}>
+              <App pageProps={{}} Component={function AdminPage} err={undefined} router={{sdc:{},sbc:{}, ...}}>
+                <AdminPage>
+                  <main style={{padding:20}}>
+                    <h1>
+                    <input
+                      placeholder="username"
+                      value=""
+                      onChange={function onChange}
+-                     fdprocessedid="zn3o8j"
+                    >
+                    <br>
+                    <input
+                      type="password"
+                      placeholder="password"
+                      value=""
+                      onChange={function onChange}
+-                     fdprocessedid="ozt779"
+                    >
+                    <br>
+                    <button
+                      onClick={function login}
+-                     fdprocessedid="ejt2wi"
+                    >
++                     Login
+              ...
+
+[00:01:20.941] Browser LOG     📸 Auto Capture Started
+[00:01:53.283] Browser LOG     🛑 Auto Capture Stopped

@@ -20,18 +20,23 @@ router.get("/", async (req, res) => {
     const geo = await getGeoForIP(ip);
 
     // insert into supabase events table
-    const { data, error } = await supabase
-      .from("events")
-      .insert([{
-        ip,
-        user_agent: ua,
-        city: geo.city || null,
-        region: geo.region || null,
-        country: geo.country_name || geo.country || null,
-        vpn_info: null // VPN removed
-      }])
-      .select("*")
-      .limit(1);
+const { data, error } = await supabase
+  .from("events")
+  .insert([
+    {
+      ip,
+      user_agent: ua,
+      city: geo.city || null,
+      region: geo.region || null,
+      country: geo.country_name || geo.country || null
+    }
+  ])
+  .select("*")
+  .single();
+
+if (error) {
+  console.log("❌ SUPABASE INSERT ERROR:", error);
+}
 
     return res.json({
       ok: true,
