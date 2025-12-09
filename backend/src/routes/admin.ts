@@ -18,7 +18,7 @@ cloudinary.config({
 });
 
 // ---------------------------
-// SIMPLE TOKEN SYSTEM
+// TOKEN SYSTEM
 // ---------------------------
 function generateToken() {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
@@ -26,19 +26,18 @@ function generateToken() {
 
 let activeTokens = new Set<string>();
 
-function verifyAdmin(req:any, res:any, next:any ) {
+function verifyAdmin(req: any, res: any, next: any) {
   const auth = req.headers.authorization || "";
   const token = auth.replace("Bearer ", "").trim();
 
   if (!activeTokens.has(token)) {
     return res.status(401).json({ ok: false, error: "unauthorized" });
   }
-
   next();
 }
 
 // ---------------------------
-// ADMIN LOGIN
+// LOGIN
 // ---------------------------
 router.post("/login", (req, res) => {
   const { user, pass } = req.body;
@@ -54,7 +53,7 @@ router.post("/login", (req, res) => {
 });
 
 // ---------------------------
-// GET EVENTS (protected)
+// EVENTS
 // ---------------------------
 router.get("/events", verifyAdmin, async (req, res) => {
   const { data } = await supabase
@@ -67,7 +66,7 @@ router.get("/events", verifyAdmin, async (req, res) => {
 });
 
 // ---------------------------
-// GET UPLOADS (protected)
+// UPLOADS
 // ---------------------------
 router.get("/uploads", verifyAdmin, async (req, res) => {
   const { data } = await supabase
@@ -80,7 +79,7 @@ router.get("/uploads", verifyAdmin, async (req, res) => {
 });
 
 // ---------------------------
-// DELETE UPLOAD (protected)
+// DELETE ONE UPLOAD
 // ---------------------------
 router.delete("/delete-upload/:id", verifyAdmin, async (req, res) => {
   const { id } = req.params;
@@ -91,21 +90,43 @@ router.delete("/delete-upload/:id", verifyAdmin, async (req, res) => {
   }
 
   try {
-    // Delete from Cloudinary
     await cloudinary.uploader.destroy(public_id);
 
-    // Delete from Supabase
-    const { error } = await supabase
-      .from("uploads")
-      .delete()
-      .eq("id", id);
-
+    const { error } = await supabase.from("uploads").delete().eq("id", id);
     if (error) return res.status(400).json({ ok: false, error });
 
     return res.json({ ok: true });
   } catch (err) {
     console.error("Delete Error:", err);
     return res.status(500).json({ ok: false, error: "delete_failed" });
+  }
+});
+
+// ---------------------------
+// DELETE ALL UPLOADS
+// ---------------------------
+router.delete("/delete-all", verifyAdmin, async (req, res) => {
+  try {
+    const { data } = await supabase.from("uploads").select("cloudinary_public_id");
+
+    if (!data || data.length === 0) {
+      return res.json({ ok: true, message: "No uploads to delete" });
+    }
+
+    // Delete all Cloudinary files
+    for (const row of data) {
+      if (row.cloudinary_public_id) {
+        await cloudinary.uploader.destroy(row.cloudinary_public_id);
+      }
+    }
+
+    // Delete all rows in Supabase
+    await supabase.from("uploads").delete().neq("id", 0);
+
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error("Delete All Error:", err);
+    return res.status(500).json({ ok: false, error: "delete_all_failed" });
   }
 });
 
