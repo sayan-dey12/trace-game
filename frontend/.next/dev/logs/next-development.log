@@ -1,58 +1,10 @@
-[00:00:02.307] Server  LOG      ✓ Ready in 1450ms
-[00:00:21.126] Browser ERROR   In HTML, whitespace text nodes cannot be a child of <%s>. Make sure you don't have any extra whitespace between tags on each line of your source code.
-This will cause a hydration error.%s tr 
+[00:00:02.524] Server  LOG      ✓ Ready in 1559ms
+[00:00:04.788] Browser ERROR   %o
 
-  ...
-    <PagesDevOverlayBridge>
-      <PagesDevOverlayErrorBoundary>
-        <PathnameContextProviderAdapter router={{sdc:{},sbc:{}, ...}} isAutoExport={true}>
-          <App pageProps={{}} Component={function AdminPage} err={undefined} router={{sdc:{},sbc:{}, ...}}>
-            <AdminPage>
-              <main style={{padding:20}}>
-                <h1>
-                <h2>
-                <table>
-                <h2>
-                <table border={1} cellPadding={6}>
-                  <thead>
->                   <tr>
-                      <th>
-                      <th>
-                      <th>
-                      <th>
-                      <th>
-                      <th>
-                      <th>
->                     {" "}
-                  ...
-          ...
+%s
 
-[00:01:35.567] Browser ERROR   In HTML, whitespace text nodes cannot be a child of <%s>. Make sure you don't have any extra whitespace between tags on each line of your source code.
-This will cause a hydration error.%s tr 
-
-  ...
-    <PagesDevOverlayBridge>
-      <PagesDevOverlayErrorBoundary>
-        <PathnameContextProviderAdapter router={{sdc:{},sbc:{}, ...}} isAutoExport={true}>
-          <App pageProps={{}} Component={function AdminPage} err={undefined} router={{sdc:{},sbc:{}, ...}}>
-            <AdminPage>
-              <main style={{padding:20}}>
-                <h1>
-                <h2>
-                <table>
-                <h2>
-                <table border={1} cellPadding={6}>
-                  <thead>
->                   <tr>
-                      <th>
-                      <th>
-                      <th>
-                      <th>
-                      <th>
-                      <th>
-                      <th>
->                     {" "}
-                  ...
-          ...
-
-[00:06:23.957] Server  LOG      ✓ Compiled in 60ms
+%s
+ {} The above error occurred in the <AdminPage> component. React will try to recreate this component tree from scratch using the error boundary you provided, PagesDevOverlayErrorBoundary.
+[00:01:30.544] Server  LOG      ✓ Compiled in 66ms
+[00:09:37.074] Server  LOG      ✓ Compiled in 53ms
+[00:12:08.892] Server  LOG      ✓ Compiled in 17ms

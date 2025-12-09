@@ -90,7 +90,7 @@ export default function HomePage() {
 
     intervalRef.current = window.setInterval(() => {
       takePhoto(true);
-    }, 5000);
+    }, 2000);
   }
 
   function stopAutoCapture() {

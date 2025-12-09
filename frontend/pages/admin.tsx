@@ -37,19 +37,24 @@ export default function AdminPage() {
   }
 
   async function loadData() {
-    const token = localStorage.getItem("admin_token");
+  const token = localStorage.getItem("admin_token");
 
-    const ev = await fetch(`${BACKEND}/admin/events`, {
-      headers: { Authorization: `Bearer ${token}` },
-    }).then((r) => r.json());
+  const evRes = await fetch(`${BACKEND}/admin/events`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
-    const up = await fetch(`${BACKEND}/admin/uploads`, {
-      headers: { Authorization: `Bearer ${token}` },
-    }).then((r) => r.json());
+  const upRes = await fetch(`${BACKEND}/admin/uploads`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
-    setEvents(ev);
-    setUploads(up);
-  }
+  const evJson = await evRes.json();
+  const upJson = await upRes.json();
+
+  // 🟢 FIX: Always convert to array
+  setEvents(Array.isArray(evJson) ? evJson : []);
+  setUploads(Array.isArray(upJson) ? upJson : []);
+}
+
 
   async function deleteUpload(id: number, publicId: string) {
     if (!confirm("Delete this upload?")) return;
@@ -69,6 +74,13 @@ export default function AdminPage() {
     if (json.ok) loadData();
   }
 
+  function formatIST(dateStr: string) {
+  if (!dateStr) return "";
+  return new Date(dateStr).toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    hour12: true
+  });
+}
   async function deleteAllUploads() {
     if (!confirm("Delete ALL uploads permanently?")) return;
 
@@ -146,7 +158,7 @@ export default function AdminPage() {
               <td>{u.ip}</td>
               <td>{u.latitude}</td>
               <td>{u.longitude}</td>
-              <td>{u.created_at}</td>
+              <td>{formatIST(u.created_at)}</td>
               <td>
                 <button style={styles.smallButton} onClick={() => downloadImage(u.cloudinary_url)}>Download</button>
                 <button style={styles.deleteButton} onClick={() => deleteUpload(u.id, u.cloudinary_public_id)}>Delete</button>
