@@ -1,0 +1,36 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "main": "next.config.js",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.87.0",
+    "caniuse-lite": "^1.0.30001760",
+    "client-only": "^0.0.1",
+    "detect-libc": "^2.1.2",
+    "iceberg-js": "^0.8.1",
+    "nanoid": "^3.3.11",
+    "next": "^16.0.8",
+    "picocolors": "^1.1.1",
+    "postcss": "^8.4.31",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "scheduler": "^0.27.0",
+    "semver": "^7.7.3",
+    "sharp": "^0.34.5",
+    "source-map-js": "^1.2.1",
+    "styled-jsx": "^5.1.6",
+    "tslib": "^2.8.1",
+    "undici-types": "^7.16.0",
+    "ws": "^8.18.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "qrcode.react": "^4.2.0"
+  }
+}
