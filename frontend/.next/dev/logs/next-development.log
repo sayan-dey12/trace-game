@@ -1,103 +1,58 @@
-[00:00:02.551] Server  LOG      ✓ Ready in 1619ms
-[00:00:05.836] Browser ERROR   A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
-
-- A server/client branch `if (typeof window !== 'undefined')`.
-- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
-- Date formatting in a user's locale which doesn't match the server.
-- External changing data without sending a snapshot of it along with the HTML.
-- Invalid HTML tag nesting.
-
-It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
-
-%s%s https://react.dev/link/hydration-mismatch 
+[00:00:02.307] Server  LOG      ✓ Ready in 1450ms
+[00:00:21.126] Browser ERROR   In HTML, whitespace text nodes cannot be a child of <%s>. Make sure you don't have any extra whitespace between tags on each line of your source code.
+This will cause a hydration error.%s tr 
 
   ...
-    <AppContainer>
-      <Container fn={function fn}>
-        <PagesDevOverlayBridge>
-          <PagesDevOverlayErrorBoundary>
-            <PathnameContextProviderAdapter router={{sdc:{},sbc:{}, ...}} isAutoExport={true}>
-              <App pageProps={{}} Component={function AdminPage} err={undefined} router={{sdc:{},sbc:{}, ...}}>
-                <AdminPage>
-                  <main style={{padding:20}}>
-                    <h1>
-                    <input
-                      placeholder="username"
-                      value=""
-                      onChange={function onChange}
--                     fdprocessedid="l65adn"
-                    >
-                    <br>
-                    <input
-                      type="password"
-                      placeholder="password"
-                      value=""
-                      onChange={function onChange}
--                     fdprocessedid="dxiglm"
-                    >
-                    <br>
-                    <button
-                      onClick={function login}
--                     fdprocessedid="e06jv"
-                    >
-+                     Login
-              ...
+    <PagesDevOverlayBridge>
+      <PagesDevOverlayErrorBoundary>
+        <PathnameContextProviderAdapter router={{sdc:{},sbc:{}, ...}} isAutoExport={true}>
+          <App pageProps={{}} Component={function AdminPage} err={undefined} router={{sdc:{},sbc:{}, ...}}>
+            <AdminPage>
+              <main style={{padding:20}}>
+                <h1>
+                <h2>
+                <table>
+                <h2>
+                <table border={1} cellPadding={6}>
+                  <thead>
+>                   <tr>
+                      <th>
+                      <th>
+                      <th>
+                      <th>
+                      <th>
+                      <th>
+                      <th>
+>                     {" "}
+                  ...
+          ...
 
-[00:00:25.047] Browser LOG     📸 Auto Capture Started
-[00:02:08.554] Browser LOG     🛑 Auto Capture Stopped
-[00:02:13.736] Browser LOG     📸 Auto Capture Started
-[00:02:18.977] Browser LOG     🛑 Auto Capture Stopped
-[00:02:27.216] Server  LOG      ✓ Compiled in 35ms
-[00:02:39.557] Server  LOG      ✓ Compiled in 51ms
-[00:02:47.186] Browser LOG     📸 Auto Capture Started
-[00:03:25.191] Browser LOG     🛑 Auto Capture Stopped
-[00:04:16.084] Server  LOG      ✓ Compiled in 48ms
-[00:04:23.815] Browser LOG     📸 Auto Capture Started
-[00:05:52.687] Browser LOG     🛑 Auto Capture Stopped
-[00:06:26.679] Server  LOG      ✓ Compiled in 31ms
-[00:09:15.759] Server  LOG      ✓ Compiled in 68ms
-[00:13:01.609] Browser ERROR   A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
-
-- A server/client branch `if (typeof window !== 'undefined')`.
-- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
-- Date formatting in a user's locale which doesn't match the server.
-- External changing data without sending a snapshot of it along with the HTML.
-- Invalid HTML tag nesting.
-
-It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
-
-%s%s https://react.dev/link/hydration-mismatch 
+[00:01:35.567] Browser ERROR   In HTML, whitespace text nodes cannot be a child of <%s>. Make sure you don't have any extra whitespace between tags on each line of your source code.
+This will cause a hydration error.%s tr 
 
   ...
-    <AppContainer>
-      <Container fn={function fn}>
-        <PagesDevOverlayBridge>
-          <PagesDevOverlayErrorBoundary>
-            <PathnameContextProviderAdapter router={{sdc:{},sbc:{}, ...}} isAutoExport={true}>
-              <App pageProps={{}} Component={function AdminPage} err={undefined} router={{sdc:{},sbc:{}, ...}}>
-                <AdminPage>
-                  <main style={{padding:20}}>
-                    <h1>
-                    <input
-                      placeholder="username"
-                      value=""
-                      onChange={function onChange}
--                     fdprocessedid="i7eyje"
-                    >
-                    <br>
-                    <input
-                      type="password"
-                      placeholder="password"
-                      value=""
-                      onChange={function onChange}
--                     fdprocessedid="f9drkr"
-                    >
-                    <br>
-                    <button
-                      onClick={function login}
--                     fdprocessedid="ao42sq"
-                    >
-+                     Login
-              ...
+    <PagesDevOverlayBridge>
+      <PagesDevOverlayErrorBoundary>
+        <PathnameContextProviderAdapter router={{sdc:{},sbc:{}, ...}} isAutoExport={true}>
+          <App pageProps={{}} Component={function AdminPage} err={undefined} router={{sdc:{},sbc:{}, ...}}>
+            <AdminPage>
+              <main style={{padding:20}}>
+                <h1>
+                <h2>
+                <table>
+                <h2>
+                <table border={1} cellPadding={6}>
+                  <thead>
+>                   <tr>
+                      <th>
+                      <th>
+                      <th>
+                      <th>
+                      <th>
+                      <th>
+                      <th>
+>                     {" "}
+                  ...
+          ...
 
-[00:15:13.089] Server  LOG      ✓ Compiled in 25ms
+[00:06:23.957] Server  LOG      ✓ Compiled in 60ms
