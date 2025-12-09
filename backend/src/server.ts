@@ -1,11 +1,12 @@
-import express from "express";
+
+import dotenv from "dotenv";
+
+dotenv.config();import express from "express";
 import cors from "cors";
 import trackRouter from "./routes/track";
 import uploadRouter from "./routes/upload";
 import path from "path";
-import dotenv from "dotenv";
 
-dotenv.config();
 
 const app = express();
 app.use(cors());

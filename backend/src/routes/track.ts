@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { getClientIP, getGeoForIP } from "../lib/ip";
-import { detectVPN } from "../lib/vpn";
 import { createClient } from "@supabase/supabase-js";
 
 const router = Router();
@@ -11,7 +10,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 /**
  * Called only after explicit consent on client:
- * logs ip, ua, geo, vpn; stores into Supabase events table.
+ * logs ip, ua, geo; stores into Supabase events table.
  */
 router.get("/", async (req, res) => {
   try {
@@ -19,7 +18,6 @@ router.get("/", async (req, res) => {
     const ua = req.get("User-Agent") || "";
 
     const geo = await getGeoForIP(ip);
-    const vpn = await detectVPN(ip);
 
     // insert into supabase events table
     const { data, error } = await supabase
@@ -30,7 +28,7 @@ router.get("/", async (req, res) => {
         city: geo.city || null,
         region: geo.region || null,
         country: geo.country_name || geo.country || null,
-        vpn_info: vpn || null
+        vpn_info: null // VPN removed
       }])
       .select("*")
       .limit(1);
@@ -39,8 +37,11 @@ router.get("/", async (req, res) => {
       ok: true,
       ip,
       ua,
-      geo: { city: geo.city, region: geo.region, country: geo.country_name },
-      vpn,
+      geo: {
+        city: geo.city,
+        region: geo.region,
+        country: geo.country_name
+      },
       event: data && data[0] ? data[0] : null
     });
   } catch (err) {

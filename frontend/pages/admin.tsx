@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND || "http://localhost:4000";
 
@@ -53,7 +53,13 @@ export default function AdminPage() {
       <table border={1} cellPadding={6}>
         <thead>
           <tr>
-            <th>ID</th><th>IP</th><th>User Agent</th><th>City</th><th>VPN</th><th>Created</th>
+            <th>ID</th>
+            <th>IP</th>
+            <th>User Agent</th>
+            <th>City</th>
+            <th>Region</th>
+            <th>Country</th>
+            <th>Created</th>
           </tr>
         </thead>
         <tbody>
@@ -63,7 +69,8 @@ export default function AdminPage() {
               <td>{e.ip}</td>
               <td>{e.user_agent}</td>
               <td>{e.city}</td>
-              <td>{JSON.stringify(e.vpn_info)}</td>
+              <td>{e.region}</td>
+              <td>{e.country}</td>
               <td>{e.created_at}</td>
             </tr>
           ))}
@@ -74,18 +81,21 @@ export default function AdminPage() {
       <table border={1} cellPadding={6}>
         <thead>
           <tr>
-            <th>ID</th><th>Image</th><th>IP</th><th>Latitude</th><th>Longitude</th><th>Created</th>
+            <th>ID</th>
+            <th>Image</th>
+            <th>IP</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th>Created</th>
           </tr>
         </thead>
         <tbody>
           {uploads.map((u) => (
             <tr key={u.id}>
               <td>{u.id}</td>
-              <td>
-                {u.cloudinary_url && (
-                  <img src={u.cloudinary_url} width="140" />
-                )}
-              </td>
+              <td>{u.cloudinary_url && (
+                <img src={u.cloudinary_url} width="140" />
+              )}</td>
               <td>{u.ip}</td>
               <td>{u.latitude}</td>
               <td>{u.longitude}</td>
